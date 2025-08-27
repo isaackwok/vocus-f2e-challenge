@@ -70,7 +70,7 @@ export default function AuthorPage({
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="vocus 方格子" />
       </Head>
-      <main>
+      <main className="mx-auto max-w-screen-md">
         <div className="mt-[28px] flex flex-col px-5 md:hidden">
           {articles.map((article, idx) => (
             <Fragment key={article._id}>
