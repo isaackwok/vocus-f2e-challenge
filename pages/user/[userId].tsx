@@ -3,6 +3,7 @@ import { getUserArticles } from "@/services/user/get-user-articles";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { Fragment } from "react";
 
 const PAGE_SIZE = 4;
 const MAX_AGE = 3600;
@@ -18,12 +19,11 @@ export async function getServerSideProps({
 
   const { articles, count } = await getUserArticles({
     userId,
-    // use floor to prevent floating points caused by changing `PAGE_SIZE`
-    page: Math.floor(offset / PAGE_SIZE) + 1,
+    page: offset / PAGE_SIZE + 1,
     num: PAGE_SIZE,
   });
 
-  if (offset + PAGE_SIZE <= count) {
+  if (offset + PAGE_SIZE < count) {
     res.setHeader(
       "Set-Cookie",
       `offset=${offset + PAGE_SIZE}; max-age=${MAX_AGE}; path=/user/${userId}; HttpOnly`,
@@ -73,10 +73,9 @@ export default function AuthorPage({
       <main>
         <div className="mt-[28px] flex flex-col px-5 md:hidden">
           {articles.map((article, idx) => (
-            <>
+            <Fragment key={article._id}>
               <ArticlePreviewCard
                 variant="flat"
-                key={article._id}
                 articleId={article._id}
                 title={article.title}
                 abstract={article.abstract}
@@ -87,7 +86,7 @@ export default function AuthorPage({
               {idx !== articles.length - 1 && (
                 <div className="my-5 h-px bg-gray-4" />
               )}
-            </>
+            </Fragment>
           ))}
         </div>
         <div className="mt-[70px] hidden md:grid md:grid-cols-2 md:gap-4">
