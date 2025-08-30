@@ -50,6 +50,13 @@ export async function getUserArticles(
   const query = new URLSearchParams(GetUserArticlesParamsSchema.parse(params));
   const res = await fetch(
     `${process.env.VOCUS_API_URL}/articles?${query.toString()}`,
+    {
+      cache: "force-cache",
+      next: {
+        revalidate: 3600,
+        tags: [`user-articles-${params.userId}`],
+      },
+    },
   );
   const data = await res.json().then(GetUserArticlesResponseSchema.parse);
   return data;
