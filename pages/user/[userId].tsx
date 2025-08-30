@@ -1,9 +1,10 @@
-import { ArticlePreviewCard } from "@/components/articles/ArticlePreviewCard/ArticlePreviewCard";
+import { AuthorArticleList } from "@/components/articles/AuthorArticleList";
+import { UserHeader } from "@/components/users/UserHeader";
+import { getUser } from "@/services/user/get-user";
 import { getUserArticles } from "@/services/user/get-user-articles";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { Fragment } from "react";
 
 const PAGE_SIZE = 4;
 const MAX_AGE = 3600;
@@ -23,6 +24,8 @@ export async function getServerSideProps({
     num: PAGE_SIZE,
   });
 
+  const user = await getUser({ userId });
+
   if (offset + PAGE_SIZE < count) {
     res.setHeader(
       "Set-Cookie",
@@ -38,23 +41,15 @@ export async function getServerSideProps({
   return {
     props: {
       articles,
+      user,
     },
   };
 }
 
 export default function AuthorPage({
   articles,
+  user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  if (articles.length === 0) {
-    return (
-      <div className="absolute top-1/2 left-1/2 mx-auto -translate-x-1/2 -translate-y-1/2 text-center">
-        <p className="text-2xl text-gray-2">No articles found.</p>
-        <Link className="text-base text-gray-4 underline" href="/">
-          Back to home
-        </Link>
-      </div>
-    );
-  }
   return (
     <>
       <Head>
@@ -71,38 +66,9 @@ export default function AuthorPage({
         <meta property="og:site_name" content="vocus 方格子" />
       </Head>
       <main className="mx-auto max-w-screen-md">
-        <div className="mt-[28px] flex flex-col px-5 md:hidden">
-          {articles.map((article, idx) => (
-            <Fragment key={article._id}>
-              <ArticlePreviewCard
-                variant="flat"
-                articleId={article._id}
-                title={article.title}
-                abstract={article.abstract}
-                thumbnailUrl={article.thumbnailUrl}
-                likeCount={article.likeCount}
-                user={article.user}
-              />
-              {idx !== articles.length - 1 && (
-                <div className="my-5 h-px bg-gray-4" />
-              )}
-            </Fragment>
-          ))}
-        </div>
-        <div className="mt-[70px] hidden md:grid md:grid-cols-2 md:gap-4">
-          {articles.map((article) => (
-            <ArticlePreviewCard
-              variant="elevated"
-              key={article._id}
-              articleId={article._id}
-              title={article.title}
-              abstract={article.abstract}
-              thumbnailUrl={article.thumbnailUrl}
-              likeCount={article.likeCount}
-              user={article.user}
-            />
-          ))}
-        </div>
+        <UserHeader user={user} />
+        <div className="my-4 h-px w-full bg-gray-4" />
+        <AuthorArticleList articles={articles} />
       </main>
     </>
   );

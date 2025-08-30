@@ -49,7 +49,7 @@ export async function getUserArticles(
 ): Promise<GetUserArticlesResponse> {
   const query = new URLSearchParams(GetUserArticlesParamsSchema.parse(params));
   const res = await fetch(
-    `https://api-staging.vocus.cc/api/articles?${query.toString()}`,
+    `${process.env.VOCUS_API_URL}/articles?${query.toString()}`,
   );
   const data = await res.json().then(GetUserArticlesResponseSchema.parse);
   return data;
