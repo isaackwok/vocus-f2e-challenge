@@ -1,4 +1,4 @@
-import { ArticlePreviewCard } from "@/components/articles/ArticlePreviewCard";
+import { ArticlePreviewCard } from "@/components/articles/ArticlePreviewCard/ArticlePreviewCard";
 import { getUserArticles } from "@/services/user/get-user-articles";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
